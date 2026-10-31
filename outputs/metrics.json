@@ -1,0 +1,9 @@
+{
+  "test_accuracy": 0.9942,
+  "target_accuracy": 0.99,
+  "target_reached": true,
+  "best_epoch": 27,
+  "training_seconds": 79.49192917900018,
+  "device": "cuda",
+  "model_path": "outputs/best_model.pth"
+}

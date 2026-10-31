@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# MNIST 原始数据和训练产物随项目一起提交，便于直接复现。

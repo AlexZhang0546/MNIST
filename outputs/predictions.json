@@ -1,0 +1,45 @@
+{
+  "validation_accuracy": 0.9911666666666666,
+  "predictions": [
+    {
+      "source": "/tmp/mnist_sample_7.png",
+      "ground_truth": null,
+      "prediction": 7,
+      "confidence": 1.0,
+      "top_k": [
+        {
+          "digit": 7,
+          "probability": 1.0
+        },
+        {
+          "digit": 2,
+          "probability": 4.1870723554993106e-10
+        },
+        {
+          "digit": 9,
+          "probability": 3.289236105707971e-10
+        }
+      ]
+    },
+    {
+      "source": "MNIST test[0]",
+      "ground_truth": 7,
+      "prediction": 7,
+      "confidence": 1.0,
+      "top_k": [
+        {
+          "digit": 7,
+          "probability": 1.0
+        },
+        {
+          "digit": 2,
+          "probability": 4.1870723554993106e-10
+        },
+        {
+          "digit": 9,
+          "probability": 3.289236105707971e-10
+        }
+      ]
+    }
+  ]
+}
