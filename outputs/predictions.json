@@ -2,7 +2,7 @@
   "validation_accuracy": 0.9911666666666666,
   "predictions": [
     {
-      "source": "/tmp/mnist_sample_7.png",
+      "source": "mnist_sample_7.png",
       "ground_truth": null,
       "prediction": 7,
       "confidence": 1.0,

@@ -1,6 +1,5 @@
 # 将神经网络“密钥模型”移植到 FPGA：面向混沌加密信号转视频的技术初探
 
-> 适用项目：[`/home/alex/Documents/program/MNIST`](/home/alex/Documents/program/MNIST)
 > 文档对象：当前仓库的 `DigitCNN` 是 FPGA 部署可行性验证模型，最终项目则需要部署参与混沌解密、作用类似密钥的神经网络模型  
 > 检索与整理日期：2026-10-31  
 > 目标：比较三条成熟的 FPGA 部署路线，为“加密混沌信号 → 神经网络密钥/解密运算 → 视频帧恢复”的实时流水线选择技术底座
@@ -379,12 +378,12 @@ python -m pip install "hls4ml[profiling]>=1.3,<2"  # 安装 hls4ml 及数值分�
 先检查工具链：
 
 ```bash
-source /opt/Xilinx/Vivado/2024.2/settings64.sh  # 加载当前环境的 Vivado 命令和许可证配置
+source <Vivado安装目录>/settings64.sh  # 加载当前环境的 Vivado 命令和许可证配置
 vivado -version  # 确认 Vivado 可执行并能找到许可证
 python -c "import hls4ml; print(hls4ml.__version__)"  # 确认 hls4ml 版本
 ```
 
-上面的 `/opt/Xilinx/Vivado/2024.2` 只是示例路径，应改成本机实际安装位置。
+上面的 `<Vivado安装目录>` 是占位符，应改成工具链配置中记录的安装位置。
 
 ### 2.3 转换前的结构检查
 
@@ -887,7 +886,7 @@ FINN 的 `build_dataflow` 会把构建目录挂载到 Docker 内。下面的目�
 在 FINN 根目录执行：
 
 ```bash
-./run-docker.sh build_dataflow /home/alex/Documents/program/MNIST/fpga/finn_mnist  # 用 FINN Docker 构建项目数据流
+./run-docker.sh build_dataflow ./fpga/finn_mnist  # 用 FINN Docker 构建项目数据流
 ```
 
 第一次建议只生成估算报告，先看：
@@ -981,7 +980,7 @@ Vitis AI 支持多种 DPU 架构，不同架构的指令集、位流和运行时
 
 ```bash
 docker pull xilinx/vitis-ai-pytorch-cpu:latest  # 拉取官方 PyTorch 量化镜像
-docker run --rm -it -v /home/alex/Documents/program/MNIST:/workspace -w /workspace xilinx/vitis-ai-pytorch-cpu:latest  # 挂载项目并进入容器
+docker run --rm -it -v "$PWD":/workspace -w /workspace xilinx/vitis-ai-pytorch-cpu:latest  # 挂载当前项目目录并进入容器
 ```
 
 在容器中先运行浮点模型检查。DPU 编译器对算子顺序敏感，卷积、BN、ReLU 的融合往往比打散节点更容易量化。当前模型没有 BatchNorm，只有 Conv、ReLU、MaxPool、Linear，结构相对简单。
@@ -1131,7 +1130,7 @@ python fpga/vitis_quantize.py --mode test --target <与目标平台一致的DPU�
 量化完成后，先找到实际 `arch.json`：
 
 ```bash
-find /opt/vitis_ai/compiler/arch -name arch.json -print  # 列出编译器可用的 DPU 架构文件
+find <Vitis AI安装目录>/compiler/arch -name arch.json -print  # 列出编译器可用的 DPU 架构文件
 ```
 
 选择与目标平台镜像完全一致的路径，然后执行：
@@ -1154,8 +1153,8 @@ vai_c_xir -x quantize_result/DigitCNN_int.xmodel -a <目标DPU架构目录>/arch
 将量化后的 `.xmodel` 复制到板卡：
 
 ```bash
-scp digitcnn_pt/digitcnn_pt.xmodel user@<板卡IP>:/home/user/digitcnn.xmodel  # 上传编译后的模型
-scp fpga/vitis_board_predict.py user@<板卡IP>:/home/user/  # 上传板端推理适配脚本
+scp digitcnn_pt/digitcnn_pt.xmodel user@<板卡IP>:  # 上传编译后的模型
+scp fpga/vitis_board_predict.py user@<板卡IP>:  # 上传板端推理适配脚本
 ```
 
 板端脚本应尽量只负责：读取模型、创建 VART runner、把输入送入 DPU、取回 10 个输出。下面是一个通用骨架，保存为 `fpga/vitis_board_predict.py`。不同目标平台镜像的 DPU 输入数据类型和 VART 版本可能不同，必须通过 `input_tensor.get_data_type()` 和官方镜像示例确认后再使用。
