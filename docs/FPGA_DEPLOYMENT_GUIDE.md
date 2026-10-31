@@ -1,6 +1,6 @@
 # 将神经网络“密钥模型”移植到 FPGA：面向混沌加密信号转视频的技术初探
 
-> 适用项目：[`/home/alex/Documents/program/MINIST`](/home/alex/Documents/program/MINIST)  
+> 适用项目：[`/home/alex/Documents/program/MNIST`](/home/alex/Documents/program/MNIST)
 > 文档对象：当前仓库的 `DigitCNN` 是 FPGA 部署可行性验证模型，最终项目则需要部署参与混沌解密、作用类似密钥的神经网络模型  
 > 检索与整理日期：2026-10-31  
 > 目标：比较三条成熟的 FPGA 部署路线，为“加密混沌信号 → 神经网络密钥/解密运算 → 视频帧恢复”的实时流水线选择技术底座
@@ -887,7 +887,7 @@ FINN 的 `build_dataflow` 会把构建目录挂载到 Docker 内。下面的目�
 在 FINN 根目录执行：
 
 ```bash
-./run-docker.sh build_dataflow /home/alex/Documents/program/MINIST/fpga/finn_mnist  # 用 FINN Docker 构建项目数据流
+./run-docker.sh build_dataflow /home/alex/Documents/program/MNIST/fpga/finn_mnist  # 用 FINN Docker 构建项目数据流
 ```
 
 第一次建议只生成估算报告，先看：
@@ -981,7 +981,7 @@ Vitis AI 支持多种 DPU 架构，不同架构的指令集、位流和运行时
 
 ```bash
 docker pull xilinx/vitis-ai-pytorch-cpu:latest  # 拉取官方 PyTorch 量化镜像
-docker run --rm -it -v /home/alex/Documents/program/MINIST:/workspace -w /workspace xilinx/vitis-ai-pytorch-cpu:latest  # 挂载项目并进入容器
+docker run --rm -it -v /home/alex/Documents/program/MNIST:/workspace -w /workspace xilinx/vitis-ai-pytorch-cpu:latest  # 挂载项目并进入容器
 ```
 
 在容器中先运行浮点模型检查。DPU 编译器对算子顺序敏感，卷积、BN、ReLU 的融合往往比打散节点更容易量化。当前模型没有 BatchNorm，只有 Conv、ReLU、MaxPool、Linear，结构相对简单。
